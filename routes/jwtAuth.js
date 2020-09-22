@@ -15,7 +15,7 @@ router.post('/register', validInfo, async (req, res) => {
     // 2. check if user exist, if user exist theen throw error
     const user = await pool.query('SELECT * FROM users WHERE user_email = $1', [email]) 
     if (user.rows.length !== 0) {
-      return res.status(401).send("User already exist")
+      return res.status(401).json("User already exist")
     }
 
     // 3. bcrypt the user password
@@ -30,10 +30,10 @@ router.post('/register', validInfo, async (req, res) => {
     // 5. generating our jwt token
     const token = jwtGenerator(newUser.rows[0].user_id)
 
-    res.json({token})
+    res.status(201).json({token})
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json('Server Error');
   }
 });
 
@@ -46,22 +46,22 @@ router.post('/login', validInfo, async(req, res)=>{
     // 2. check if user exist, if not then we throw error
     const user = await pool.query('SELECT * FROM users WHERE user_email = $1', [email]) 
     if (user.rows.length === 0) {
-      return res.status(401).send('Password or Email is incorrect')
+      return res.status(401).json('Password or Email is incorrect')
     }
 
     // 3. check if incomming password is the same the db password
     const validPassword = await bcrypt.compare(password, user.rows[0].user_password) // return boolean
     if (!validPassword) {
-      return res.status(401).send('Password or Email is incorrect')
+      return res.status(401).json('Password or Email is incorrect')
     }
 
     // 4. give then jwt token
     const token = jwtGenerator(user.rows[0].user_id)
 
-    res.json({token})
+    res.status(200).json({token})
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json('Server Error');
   }
 })
 
@@ -70,7 +70,7 @@ router.get('/is-verify', authorization, async (req, res) => {
     res.json(true)
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json('Server Error');
   }
 })
 

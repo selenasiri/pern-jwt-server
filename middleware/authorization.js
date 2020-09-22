@@ -5,7 +5,7 @@ module.exports = async (req, res, next)=>{
     // 1. get token in header?
     const jwtToken = req.header('token')
     if (!jwtToken) {
-      res.status(403).send('Not Authorize');
+      res.status(403).json('Not Authorize');
     }
 
     // 2. verify token
@@ -14,6 +14,6 @@ module.exports = async (req, res, next)=>{
     next()
   } catch (err) {
     console.error(err.message);
-    res.status(403).send('Not Authorize');
+    res.status(403).json('Not Authorize');
   }
 }
